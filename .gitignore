@@ -2,8 +2,8 @@
 /*.pyc
 
 # PyInstaller build directories
-/build/
-/dist/
+Backend/build/
+Backend/dist/
 /*.spec
 
 # Virtual Environment
