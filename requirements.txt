@@ -5,3 +5,4 @@ httpx[http2]~=0.23.3
 pandas
 matplotlib
 requests
+pyinstaller
