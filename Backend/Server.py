@@ -432,7 +432,18 @@ class Database:
             cursor.execute(query, params)
             return cursor.fetchone()
 
-
+    
+    def calculate_balances(self, group_id):
+        """Calculate balances for each user in the group."""
+        query = """
+            SELECT u.pk_id, u.user_name, SUM(ug.amount) as balance
+            FROM userproducts ug
+            JOIN users u ON u.pk_id = ug.fk_user_id
+            WHERE ug.fk_group_id = %s
+            GROUP BY u.pk_id, u.user_name
+        """
+        self.cursor.execute(query, (group_id,))
+        return self.cursor.fetchall()
 
 
 # def write_category(group_id, new_category):

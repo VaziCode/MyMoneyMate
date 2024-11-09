@@ -66,8 +66,6 @@ class Category(Enum):
     OTHER = "other"
     # TODO: verify categories
 
-# categories_config = ["food", "gas", "groceries", "shopping", "clothes", "pleasure", "other"]
-# categories_config_dict = {"food": "Food 🍔", "gas": "Gas ⛽", "groceries": "Groceries🍎", "shopping": "Shopping🛒", "clothes": "Clothes👕", "pleasure": "Pleasure🎦", "other": "Other"}
 
 categories_config = {
     'Food': '🍔',
@@ -106,6 +104,8 @@ categories_config_dict = {
     'Other': 'Other 🗃️',
     'Cancel': 'Cancel ❌'
 }
+
+"""Configuration and constants for the MyMoneyMate bot."""
 #GLOBAL VALUES:
 PASSWORD_MAX_LENGTH = 40
 PASSWORD_MIN_LENGTH = 6

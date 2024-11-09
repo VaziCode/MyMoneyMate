@@ -5,26 +5,6 @@ from telegram.ext import CallbackContext
 
 from Backend import config
 
-
-
-
-# async def handle_message(update: Update, context: CallbackContext):
-#     message_type: str = update.message.chat.type
-#     text: str = update.message.text
-#     print(f'User ({update.message.chat.id}) in {message_type}: "{text}"')
-#
-#     if message_type == 'group':
-#         if config.BOT_USERNAME in text:
-#             new_text = str = text.replace(config.BOT_USERNAME, '').strip()
-#             response = handle_response(new_text)
-#         else:
-#             return
-#     else:
-#         response = handle_response(text)
-#     print('Bot: ', response)
-#     await update.message.reply_text(response)
-        
-    
     
 
 def responses(input_text):

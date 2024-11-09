@@ -1,0 +1,27 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.12
+    commands:
+      - pip install -r requirements.txt
+
+  build:
+    commands:
+      - echo Build started on `date`
+
+  post_build:
+    commands:
+      - echo Build completed on `date`
+
+artifacts:
+  files:
+    - main.py
+    - Backend/*
+    - requirements.txt
+
+# Optional: cache dependencies to speed up builds
+cache:
+  paths:
+    - '/root/.cache/pip/**'

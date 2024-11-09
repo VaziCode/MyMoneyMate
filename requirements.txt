@@ -1,0 +1,7 @@
+python-telegram-bot==20.1
+asyncio
+psycopg2-binary  # if using PostgreSQL
+httpx[http2]~=0.23.3
+pandas
+matplotlib
+requests

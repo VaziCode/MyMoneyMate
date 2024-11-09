@@ -70,7 +70,7 @@ Here are the main commands available in MyMoneyMate:
 
 ```
 MyMoneyMate/
-├── backend.py              # Handles database interactions
+├── Server.py              # Handles database interactions
 ├── Commands.py             # Defines bot commands and interactions
 ├── main.py                 # Bot initialization and main loop
 ├── config.py               # Configuration and settings
