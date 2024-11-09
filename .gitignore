@@ -1,4 +1,13 @@
-*.pyc
+/__pycache__/
+/*.pyc
+
+# PyInstaller build directories
+/build/
+/dist/
+/*.spec
+
+# Virtual Environment
+/myenv/
+/.venv
+
 *.png
-dist/
-*.exe
