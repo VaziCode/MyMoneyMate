@@ -1,100 +1,98 @@
 # MyMoneyMate
 
-MyMoneyMate is a Telegram bot designed to simplify personal and group expense tracking. By integrating directly with Telegram, MyMoneyMate provides a convenient way to manage expenses without leaving your chat. Users can add expenses, view statistics, manage shared group expenses, and export data to Excel, all within the chat interface.
-
-## Table of Contents
-1. [Features](#features)
-2. [Setup](#setup)
-3. [Configuration](#configuration)
-4. [Commands](#commands)
-5. [Project Structure](#project-structure)
-6. [Contributing](#contributing)
-7. [License](#license)
-
----
+**MyMoneyMate** is a versatile expense-tracking application designed to help users manage both personal and group expenses. The app integrates seamlessly with Telegram, providing an easy-to-use interface for tracking expenses, setting savings goals, and analyzing spending patterns. 
 
 ## Features
 
-- **Add New Expenses**: Track personal or group expenses by adding new expense entries directly in the chat.
-- **Group Expense Management**: Manage shared expenses with group members, keeping everyone up-to-date on balances and owed amounts.
-- **Expense Statistics**: View statistics based on different time periods and currencies, making it easy to analyze spending habits.
-- **Add Custom Categories**: Personalize expense tracking with user-defined categories.
-- **Export to Excel**: Download expense data to an Excel file, allowing further analysis outside the bot.
-  
-## Setup
+- **Personal and Group Expense Tracking:** Log expenses individually or within groups.
+- **Category Management:** Organize expenses by categories for easier tracking.
+- **Expense Analysis and Statistics:** Review your spending patterns and generate reports.
+- **Multi-Currency Support:** Track expenses in different currencies.
 
-### Prerequisites
-1. **Python 3.8+**: Ensure you have Python installed.
-2. **Dependencies**: Install dependencies via `pip`.
-3. **PostgreSQL**: Set up PostgreSQL as the database.
+## Running the Application
 
-### Installation
-1. Clone this repository:
-    ```bash
-    git clone https://github.com/username/MyMoneyMate.git
-    cd MyMoneyMate
-    ```
-2. Install the required Python packages:
-    ```bash
-    pip install -r requirements.txt
-    ```
+You have two options to run **MyMoneyMate**:
 
-3. Set up the PostgreSQL database:
-   - Create the necessary tables using the provided SQL scripts in `/database/`.
+### Option 1: Using the `main.exe` Executable
 
-4. Configure environment variables in `.env` (see below).
+1. **Locate `main.exe`:**
+   - Navigate to the `Backend/dist` directory in your project folder.
 
-### Environment Variables
-In the root directory, create a `.env` file and configure the following:
-   ```
-   TELEGRAM_TOKEN=your_telegram_bot_token
-   DATABASE_URL=your_database_url
+   ```plaintext
+   Backend/dist
    ```
 
-## Configuration
+2. **Run `main.exe`:**
+   - Double-click `main.exe` or run it from the terminal using:
 
-Configuration is handled in `config.py`. You can adjust settings for logging, database connections, and Telegram API integration as needed. This file includes configurable parameters like categories and database connection settings.
+     ```bash
+     ./main.exe
+     ```
 
-## Commands
+   - This option includes all dependencies, so no additional installation is required.
 
-Here are the main commands available in MyMoneyMate:
+### Option 2: Installing Dependencies and Running the App Manually
 
-- `/start` - Initialize the bot and get a welcome message.
-- `/add [amount]` - Add a new expense, with further prompts for category selection.
-- `/stats` - View statistics based on time period and currency. Options include "This Month," "Last Month," or "All Time."
-- `/add_category [category_name]` - Add a new expense category for custom tracking.
-- `/list` - List all expenses for the user or group.
-- `/export` - Export all expenses to an Excel file with columns for user, date, category, amount, and expense ID.
+If you prefer to manually set up the environment:
 
-## Project Structure
+1. **Set Up Python and Virtual Environment:**
+   - Install Python (version 3.12 or compatible).
+   - Create and activate a virtual environment:
 
-```
-MyMoneyMate/
-├── Server.py              # Handles database interactions
-├── Commands.py             # Defines bot commands and interactions
-├── main.py                 # Bot initialization and main loop
-├── config.py               # Configuration and settings
-├── requirements.txt        # Project dependencies
-├── database/
-│   ├── setup.sql           # SQL scripts for database setup
-└── README.md               # Project README
-```
+     ```bash
+     python -m venv myenv
+     myenv\Scripts\activate  # Windows
+     source myenv/bin/activate  # macOS/Linux
+     ```
 
-## Contributing
+2. **Install Required Packages:**
+   - Move to the `Backend` directory and install dependencies:
 
-We welcome contributions! If you'd like to improve MyMoneyMate, please fork the repository and create a pull request with your changes. Ensure your code follows standard practices and includes relevant documentation or comments.
+     ```bash
+     cd Backend
+     pip install -r requirements.txt
+     ```
 
-### Steps to Contribute
-1. Fork the project.
-2. Create a branch (`git checkout -b feature-branch`).
-3. Commit your changes (`git commit -am 'Add new feature'`).
-4. Push to the branch (`git push origin feature-branch`).
-5. Open a pull request.
+3. **Run the Application:**
+   - With all dependencies in place, launch the app:
 
-## License
+     ```bash
+     python main.py
+     ```
 
-MyMoneyMate is licensed under the MIT License. See `LICENSE` for more information.
+## Main Commands and Usage
 
----
+Below are the primary commands available in **MyMoneyMate**:
 
-Thank you for using MyMoneyMate! If you encounter any issues, please reach out via GitHub issues.
+### 1. `/new <category> <amount>`
+   - **Description:** Adds a new expense.
+   - **Example:** `/new Food 50`
+   - **Usage:** Provides an interface to log a new expense under a specified category.
+
+### 2. `/delete <expense_id>`
+   - **Description:** Deletes an expense based on the unique expense ID.
+   - **Example:** `/delete 1`
+   - **Usage:** Deletes the expense entry with the specified ID.
+
+### 3. `/add_category <category_name>`
+   - **Description:** Adds a new category to organize expenses.
+   - **Example:** `/add_category Travel`
+   - **Usage:** Useful for setting up custom categories beyond the default list.
+
+### 4. `/list`
+   - **Description:** Lists all expenses for the user or group.
+   - **Usage:** Displays expenses in a structured format, showing date, category, and amount.
+
+### 5. `/stats`
+   - **Description:** Provides a summary of expenses over different timeframes.
+   - **Example Usage:** Select between "This Month," "Last Month," or "All Time" to view relevant statistics.
+
+### 6. `/brakeeven`
+   - **Description:** Shows balances between group members based on expenses.
+   - **Usage:** Helps group members understand their owed or due amounts within shared expenses.
+
+## Additional Information
+
+- **Multi-Currency Support:** Use `/stats` to select the currency you want to view your statistics in. The app provides a selection of common currencies.
+- **Database Configuration:** Ensure any required database connections are configured in the `config.py` file or through environment variables.
+- **Environment Variables:** Define any needed environment variables in a `.env` file if required by the app.
