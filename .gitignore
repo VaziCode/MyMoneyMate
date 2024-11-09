@@ -8,6 +8,6 @@
 
 # Virtual Environment
 /myenv/
-/.venv
+/.venv/
 
 *.png
