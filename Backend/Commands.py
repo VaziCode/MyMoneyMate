@@ -602,11 +602,35 @@ async def add_category(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 """List all expenses of the chat."""
 
 
+# async def list_expenses(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+# 	user_id = update.message.from_user.id
+# 	group_id = update.message.chat.id
+#
+# 	try:
+# 		expenses = db.get_expenses(user_id, group_id)
+#
+# 		# Check if any expenses were found
+# 		if not expenses:
+# 			await update.message.reply_text("No expenses found.")
+# 			return
+#
+# 		# Format the expenses for display, including pk_id
+# 		expenses_text = "\n".join([
+# 			f"ID: {expense[0]}, Date: {expense[1]}, Amount: {expense[2]}, Category: {expense[3]}"
+# 			for expense in expenses
+# 		])
+#
+# 		await update.message.reply_text(f"Here are your expenses:\n{expenses_text}")
+#
+# 	except Exception as e:
+# 		logging.error(f"Error in list_expenses: {e}")
+# 		await update.message.reply_text(f"Error in list_expenses: {e}")
 async def list_expenses(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 	user_id = update.message.from_user.id
 	group_id = update.message.chat.id
 	
 	try:
+		# Fetch expenses from the database
 		expenses = db.get_expenses(user_id, group_id)
 		
 		# Check if any expenses were found
@@ -614,7 +638,7 @@ async def list_expenses(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 			await update.message.reply_text("No expenses found.")
 			return
 		
-		# Format the expenses for display, including pk_id
+		# Format the expenses for display
 		expenses_text = "\n".join([
 			f"ID: {expense[0]}, Date: {expense[1]}, Amount: {expense[2]}, Category: {expense[3]}"
 			for expense in expenses

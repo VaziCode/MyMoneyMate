@@ -151,15 +151,26 @@ class Database:
             return None
     
     """ Get the expenses of a user in a group. """
+    # def get_expenses(self, user_id, group_id):
+    #     cursor = self.connection.cursor()
+    #     cursor.execute("""
+    #         SELECT pk_id, date_created, fk_user_id, category_name, amount
+    #         FROM userproducts
+    #         WHERE fk_user_id = %s AND fk_group_id = %s
+    #         ORDER BY date_created DESC;
+    #     """, (user_id, group_id))
+    #     return cursor.fetchall()
     def get_expenses(self, user_id, group_id):
-        cursor = self.connection.cursor()
-        cursor.execute("""
-            SELECT pk_id, date_created, fk_user_id, category_name, amount
+        self.cursor.execute(
+            """
+            SELECT pk_id, date_created, amount, category_name
             FROM userproducts
             WHERE fk_user_id = %s AND fk_group_id = %s
             ORDER BY date_created DESC;
-        """, (user_id, group_id))
-        return cursor.fetchall()
+            """,
+            (user_id, group_id),
+        )
+        return self.cursor.fetchall()
     
     # ------------------------------------------------------
     # -------------------  Is Exist -----------------------
