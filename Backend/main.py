@@ -1,10 +1,13 @@
 import os
 import sys
 import argparse
-from Backend import Commands
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
+import uuid
 
+
+# from Backend.Commands import logger
+from Backend.Responses import responses, get_price, get_category, valid_email, help_response
 from Backend.config import (
 	TOKEN,
 	BOT_USERNAME,
@@ -19,7 +22,7 @@ from Backend.config import (
 	LOGIN_NAME_MIN_LENGTH,
 	LOGIN_NAME_MAX_LENGTH
 )
-
+# from Backend.backend import Database, get_categories, write_category, remove_category, validate_input
 from Backend.Server import Database, validate_input
 
 from telegram import (
@@ -37,7 +40,7 @@ from telegram.ext import (
 	CallbackQueryHandler
 )
 
-"""Handle button interactions for the bot."""
+
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 	query = update.callback_query
 	await query.answer()
@@ -116,7 +119,7 @@ async def error(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # Run the program
 
-
+from Backend import Commands
 
 
 
