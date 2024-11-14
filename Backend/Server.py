@@ -38,7 +38,11 @@ class Database:
         if len(login_name) > config.LOGIN_NAME_MAX_LENGTH: return None
         
         #set new login_name in db
-        self.cursor.execute(f"INSERT INTO users (pk_id, user_name, login_name, password, is_admin) VALUES ('{user_id}', '{user_name}', '{(login_name).lower()}', '{password}', '{is_admin}')")
+        # self.cursor.execute(f"INSERT INTO users (pk_id, user_name, login_name, password, is_admin) VALUES ('{user_id}', '{user_name}', '{(login_name).lower()}', '{password}', '{is_admin}')")
+        self.cursor.execute(
+            "INSERT INTO users (pk_id, user_name, login_name, password, is_admin) VALUES (%s, %s, %s, %s, %s)",
+            (user_id, user_name, login_name.lower(), password, is_admin)
+        )
         self.connection.commit()
         
         return login_name
@@ -46,7 +50,11 @@ class Database:
     """ Create a new group in the database. """
     def create_group(self, group_id, group_name):
         ''' create group in 'groups' table '''
-        self.cursor.execute(f"INSERT INTO groups (pk_id, group_name) VALUES ('{group_id}', '{group_name}')")
+        # self.cursor.execute(f"INSERT INTO groups (pk_id, group_name) VALUES ('{group_id}', '{group_name}')")
+        self.cursor.execute(
+            "INSERT INTO groups (pk_id, group_name) VALUES (%s, %s)",
+            (group_id, group_name)
+        )
         self.connection.commit()
     
     """ Setting a new login name for a user. """
@@ -57,7 +65,11 @@ class Database:
         if len(login_name) > config.LOGIN_NAME_MAX_LENGTH: return None
         
         #set new login_Name in db
-        self.cursor.execute(f"UPDATE users SET login_name = '{login_name}' WHERE pk_id = {user_id}")
+        # self.cursor.execute(f"UPDATE users SET login_name = '{login_name}' WHERE pk_id = {user_id}")
+        self.cursor.execute(
+            "UPDATE users SET login_name = %s WHERE pk_id = %s",
+            (login_name, user_id)
+        )
         self.connection.commit()
         
         return login_name
@@ -70,7 +82,11 @@ class Database:
         if len(password) > config.PASSWORD_MAX_LENGTH: return None
         
         #set new password in db
-        self.cursor.execute(f"UPDATE users SET password = '{password}' WHERE pk_id = {user_id}")
+        # self.cursor.execute(f"UPDATE users SET password = '{password}' WHERE pk_id = {user_id}")
+        self.cursor.execute(
+            "UPDATE users SET password = %s WHERE pk_id = %s",
+            (password, user_id)
+        )
         self.connection.commit()
         
         return password
@@ -107,7 +123,11 @@ class Database:
     def get_password(self, user_id) -> str:
         ''' Get password from 'users' table following given user_id '''
         #get password following given user_id
-        self.cursor.execute(f"select password from users where pk_id = {user_id}")
+        # self.cursor.execute(f"select password from users where pk_id = {user_id}")
+        self.cursor.execute(
+            "SELECT password FROM users WHERE pk_id = %s",
+            (user_id,)
+        )
         password = self.cursor.fetchall()[0][0] #return list of tuples thats why
         if password:
             return password
@@ -119,7 +139,11 @@ class Database:
     def get_login(self, user_id) -> str:
         ''' Get login_name from 'users' table following given user_id '''
         #get login_name following given user_id
-        self.cursor.execute(f"select login_name from users where pk_id = {user_id}")
+        # self.cursor.execute(f"select login_name from users where pk_id = {user_id}")
+        self.cursor.execute(
+            "SELECT login_name FROM users WHERE pk_id = %s",
+            (user_id,)
+        )
         login_name = self.cursor.fetchall()[0][0] #return list of tuples thats why
         if login_name:
             return login_name
@@ -147,7 +171,11 @@ class Database:
             Return (False, None) if not exists'''
             
         #check if user_id exists
-        self.cursor.execute(f"select * from users where pk_id = {user_id}")
+        # self.cursor.execute(f"select * from users where pk_id = {user_id}")
+        self.cursor.execute(
+            "SELECT * FROM users WHERE pk_id = %s",
+            (user_id,)
+        )
         user = self.cursor.fetchall() #return list of tuples
         if user:
             return True, user
@@ -160,7 +188,11 @@ class Database:
     """ Check if a usergroup exists in the database. """
     def is_usergroups_row_exists(self, user_id, group_id) -> bool:
         ''' return True if user-group row is already exists '''
-        self.cursor.execute(f"SELECT * FROM usergroups WHERE fk_user_id = {user_id} AND fk_group_id = {group_id}")
+        # self.cursor.execute(f"SELECT * FROM usergroups WHERE fk_user_id = {user_id} AND fk_group_id = {group_id}")
+        self.cursor.execute(
+            "SELECT * FROM usergroups WHERE fk_user_id = %s AND fk_group_id = %s",
+            (user_id, group_id)
+        )
         row = self.cursor.fetchall() #return list of tuples
         if row:
             return True
@@ -171,7 +203,11 @@ class Database:
     def is_group_exists(self, group_id):
         ''' Check if group exists, return True / False'''
         #check if group_id exists
-        self.cursor.execute(f"select * from groups where pk_id = {group_id}")
+        # self.cursor.execute(f"select * from groups where pk_id = {group_id}")
+        self.cursor.execute(
+            "SELECT * FROM groups WHERE pk_id = %s",
+            (group_id,)
+        )
         group = self.cursor.fetchall() #return list of tuples
         if group:
             return True
@@ -187,7 +223,8 @@ class Database:
             #if not create random user
             while True:
                 login_name = generate_random_username().lower()
-                self.cursor.execute(f"select * from users where login_name = '{login_name}'") #make sure login_name not exists
+                # self.cursor.execute(f"select * from users where login_name = '{login_name}'") #make sure login_name not exists
+                self.cursor.execute("select * from users where login_name = %s",(login_name)) #make sure login_name not exists
                 user = self.cursor.fetchall()
                 if not user:
                     break
@@ -294,14 +331,38 @@ class Database:
     def piechart(self, group_id, date,currency="NIS"):
         try:
             # Define SQL query based on the date parameter
+            # if date == "This Month":
+            #     query = f"SELECT category_name, SUM(amount) FROM userproducts WHERE fk_group_id = {group_id} AND EXTRACT(MONTH FROM date_created) = EXTRACT(MONTH FROM CURRENT_DATE) AND EXTRACT(YEAR FROM date_created) = EXTRACT(YEAR FROM CURRENT_DATE) GROUP BY category_name"
+            # elif date == "Last Month":
+            #     query = f"SELECT category_name, SUM(amount) FROM userproducts WHERE fk_group_id = {group_id} AND EXTRACT(MONTH FROM date_created) = EXTRACT(MONTH FROM CURRENT_DATE) - 1 AND EXTRACT(YEAR FROM date_created) = EXTRACT(YEAR FROM CURRENT_DATE) GROUP BY category_name"
+            # else:
+            #     query = f"SELECT category_name, SUM(amount) FROM userproducts WHERE fk_group_id = {group_id} GROUP BY category_name"
             if date == "This Month":
-                query = f"SELECT category_name, SUM(amount) FROM userproducts WHERE fk_group_id = {group_id} AND EXTRACT(MONTH FROM date_created) = EXTRACT(MONTH FROM CURRENT_DATE) AND EXTRACT(YEAR FROM date_created) = EXTRACT(YEAR FROM CURRENT_DATE) GROUP BY category_name"
+                query = """
+                    SELECT category_name, SUM(amount)
+                    FROM userproducts
+                    WHERE fk_group_id = %s
+                    AND EXTRACT(MONTH FROM date_created) = EXTRACT(MONTH FROM CURRENT_DATE)
+                    AND EXTRACT(YEAR FROM date_created) = EXTRACT(YEAR FROM CURRENT_DATE)
+                    GROUP BY category_name
+                """
             elif date == "Last Month":
-                query = f"SELECT category_name, SUM(amount) FROM userproducts WHERE fk_group_id = {group_id} AND EXTRACT(MONTH FROM date_created) = EXTRACT(MONTH FROM CURRENT_DATE) - 1 AND EXTRACT(YEAR FROM date_created) = EXTRACT(YEAR FROM CURRENT_DATE) GROUP BY category_name"
+                query = """
+                    SELECT category_name, SUM(amount)
+                    FROM userproducts
+                    WHERE fk_group_id = %s
+                    AND EXTRACT(MONTH FROM date_created) = EXTRACT(MONTH FROM CURRENT_DATE) - 1
+                    AND EXTRACT(YEAR FROM date_created) = EXTRACT(YEAR FROM CURRENT_DATE)
+                    GROUP BY category_name
+                """
             else:
-                query = f"SELECT category_name, SUM(amount) FROM userproducts WHERE fk_group_id = {group_id} GROUP BY category_name"
-
-            self.cursor.execute(query)
+                query = """
+                    SELECT category_name, SUM(amount)
+                    FROM userproducts
+                    WHERE fk_group_id = %s
+                    GROUP BY category_name
+                """
+            self.cursor.execute(query, (group_id,))
             data = self.cursor.fetchall()
 
             # Validate that we have positive values in prices for plotting
@@ -331,56 +392,127 @@ class Database:
 
     """ Get a bar chart of expenses for a group. """
     def barchart(self,group_id, date, currency="NIS"):
-        if date == "This Month":
-            query = f"select u.user_name, sum(amount) from userproducts up join users u on up.fk_user_id = u.pk_id where fk_group_id = {group_id} AND EXTRACT(MONTH FROM up.date_created) = EXTRACT(MONTH FROM CURRENT_DATE) group by u.user_name"
-        elif date == "Last Month":
-            query = f"select u.user_name, sum(amount) from userproducts up join users u on up.fk_user_id = u.pk_id where fk_group_id = {group_id} AND EXTRACT(MONTH FROM up.date_created) = EXTRACT(MONTH FROM CURRENT_DATE) -1 group by u.user_name"
-        else:
-            query = f"select u.user_name, sum(amount) from userproducts up join users u on up.fk_user_id = u.pk_id where fk_group_id = {group_id} group by u.user_name"
-        
-        self.cursor.execute(query)
-        data = self.cursor.fetchall()
-        # create lists of categories and total prices
-        users = [row[0][::1] for row in data]
-        prices = [row[1] for row in data]
-
-        plt.bar(users, prices)
-        plt.xlabel('user')
-        plt.ylabel('amount spend')
-        plt.title('Expenses by users')
-        plt.savefig('my_plot2.png')
-        plt.clf()
-
+        # if date == "This Month":
+        #     query = f"select u.user_name, sum(amount) from userproducts up join users u on up.fk_user_id = u.pk_id where fk_group_id = {group_id} AND EXTRACT(MONTH FROM up.date_created) = EXTRACT(MONTH FROM CURRENT_DATE) group by u.user_name"
+        # elif date == "Last Month":
+        #     query = f"select u.user_name, sum(amount) from userproducts up join users u on up.fk_user_id = u.pk_id where fk_group_id = {group_id} AND EXTRACT(MONTH FROM up.date_created) = EXTRACT(MONTH FROM CURRENT_DATE) -1 group by u.user_name"
+        # else:
+        #     query = f"select u.user_name, sum(amount) from userproducts up join users u on up.fk_user_id = u.pk_id where fk_group_id = {group_id} group by u.user_name"
+        #
+        # self.cursor.execute(query)
+        # data = self.cursor.fetchall()
+        try:
+            if date == "This Month":
+                query = """
+                    SELECT u.user_name, SUM(amount)
+                    FROM userproducts up
+                    JOIN users u ON up.fk_user_id = u.pk_id
+                    WHERE fk_group_id = %s
+                      AND EXTRACT(MONTH FROM up.date_created) = EXTRACT(MONTH FROM CURRENT_DATE)
+                    GROUP BY u.user_name
+                """
+            elif date == "Last Month":
+                query = """
+                    SELECT u.user_name, SUM(amount)
+                    FROM userproducts up
+                    JOIN users u ON up.fk_user_id = u.pk_id
+                    WHERE fk_group_id = %s
+                      AND EXTRACT(MONTH FROM up.date_created) = EXTRACT(MONTH FROM CURRENT_DATE) - 1
+                    GROUP BY u.user_name
+                """
+            else:
+                query = """
+                    SELECT u.user_name, SUM(amount)
+                    FROM userproducts up
+                    JOIN users u ON up.fk_user_id = u.pk_id
+                    WHERE fk_group_id = %s
+                    GROUP BY u.user_name
+                """
+            
+            self.cursor.execute(query, (group_id,))
+            data = self.cursor.fetchall()
+            # create lists of categories and total prices
+            users = [row[0][::1] for row in data]
+            prices = [row[1] for row in data]
+    
+            plt.bar(users, prices)
+            plt.xlabel('user')
+            plt.ylabel('amount spend')
+            plt.title('Expenses by users')
+            plt.savefig('my_plot2.png')
+            plt.clf()
+            
+        except Exception as e:
+            logging.error(f"Error generating bar chart: {e}")
+            return False
 
     """ Get the total expenses for a group. """
     def total_expenses(self, group_id, time_period, currency="NIS"):
         # Query to get total expenses in NIS for the selected period
-        if time_period == "This Month":
-            query = f"SELECT SUM(amount) FROM userproducts WHERE fk_group_id = {group_id} AND EXTRACT(MONTH FROM date_created) = EXTRACT(MONTH FROM CURRENT_DATE) AND EXTRACT(YEAR FROM date_created) = EXTRACT(YEAR FROM CURRENT_DATE)"
-        elif time_period == "Last Month":
-            query = f"SELECT SUM(amount) FROM userproducts WHERE fk_group_id = {group_id} AND EXTRACT(MONTH FROM date_created) = EXTRACT(MONTH FROM CURRENT_DATE) - 1 AND EXTRACT(YEAR FROM date_created) = EXTRACT(YEAR FROM CURRENT_DATE)"
-        else:
-            query = f"SELECT SUM(amount) FROM userproducts WHERE fk_group_id = {group_id}"
-
-        self.cursor.execute(query)
-        result = self.cursor.fetchone()[0] or 0  # Handle no expenses case
-
-        # Conversion rates (example values)
-        conversion_rates = {
-            "USD": 0.27,  # 1 NIS = 0.27 USD
-            "Euro": 0.23,  # 1 NIS = 0.23 Euro
-            "NIS": 1.0  # 1 NIS = 1 NIS
-        }
-
-        # Convert result to the selected currency
-        result_in_currency = result * conversion_rates.get(currency, 1.0)
-        return round(result_in_currency, 2)
+        # if time_period == "This Month":
+        #     query = f"SELECT SUM(amount) FROM userproducts WHERE fk_group_id = {group_id} AND EXTRACT(MONTH FROM date_created) = EXTRACT(MONTH FROM CURRENT_DATE) AND EXTRACT(YEAR FROM date_created) = EXTRACT(YEAR FROM CURRENT_DATE)"
+        # elif time_period == "Last Month":
+        #     query = f"SELECT SUM(amount) FROM userproducts WHERE fk_group_id = {group_id} AND EXTRACT(MONTH FROM date_created) = EXTRACT(MONTH FROM CURRENT_DATE) - 1 AND EXTRACT(YEAR FROM date_created) = EXTRACT(YEAR FROM CURRENT_DATE)"
+        # else:
+        #     query = f"SELECT SUM(amount) FROM userproducts WHERE fk_group_id = {group_id}"
+        #
+        # self.cursor.execute(query)
+        # result = self.cursor.fetchone()[0] or 0  # Handle no expenses case
+        try:
+            if time_period == "This Month":
+                query = """
+                    SELECT SUM(amount)
+                    FROM userproducts
+                    WHERE fk_group_id = %s
+                      AND EXTRACT(MONTH FROM date_created) = EXTRACT(MONTH FROM CURRENT_DATE)
+                      AND EXTRACT(YEAR FROM date_created) = EXTRACT(YEAR FROM CURRENT_DATE)
+                """
+            elif time_period == "Last Month":
+                query = """
+                    SELECT SUM(amount)
+                    FROM userproducts
+                    WHERE fk_group_id = %s
+                      AND EXTRACT(MONTH FROM date_created) = EXTRACT(MONTH FROM CURRENT_DATE) - 1
+                      AND EXTRACT(YEAR FROM date_created) = EXTRACT(YEAR FROM CURRENT_DATE)
+                """
+            else:
+                query = """
+                    SELECT SUM(amount)
+                    FROM userproducts
+                    WHERE fk_group_id = %s
+                """
+            
+            self.cursor.execute(query, (group_id,))
+            result = self.cursor.fetchone()[0] or 0  # Handle no expenses case
+            # Conversion rates (example values)
+            conversion_rates = {
+                "USD": 0.27,  # 1 NIS = 0.27 USD
+                "Euro": 0.23,  # 1 NIS = 0.23 Euro
+                "NIS": 1.0  # 1 NIS = 1 NIS
+            }
+    
+            # Convert result to the selected currency
+            result_in_currency = result * conversion_rates.get(currency, 1.0)
+            return round(result_in_currency, 2)
+        
+        except Exception as e:
+            logging.error(f"Error in total expenses: {e}")
+            return False
     
     
     """ Provide the total amount each user owes and to who 'Breakeven'. """
     def brake_even(self, group_id):
-        
-        self.cursor.execute(f"select u.user_name, sum(amount)from userproducts up join users u on up.fk_user_id = u.pk_id where fk_group_id = {group_id} group by u.user_name")
+        #
+        # self.cursor.execute(f"select u.user_name, sum(amount)from userproducts up join users u on up.fk_user_id = u.pk_id where fk_group_id = {group_id} group by u.user_name")
+        # data = self.cursor.fetchall()
+        query = """
+            SELECT u.user_name, SUM(amount)
+            FROM userproducts up
+            JOIN users u ON up.fk_user_id = u.pk_id
+            WHERE fk_group_id = %s
+            GROUP BY u.user_name
+        """
+        self.cursor.execute(query, (group_id,))
         data = self.cursor.fetchall()
         if not data:
             return "No expenses to split"
