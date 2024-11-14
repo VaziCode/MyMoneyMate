@@ -1,98 +1,122 @@
+---
+
 # MyMoneyMate
 
-**MyMoneyMate** is a versatile expense-tracking application designed to help users manage both personal and group expenses. The app integrates seamlessly with Telegram, providing an easy-to-use interface for tracking expenses, setting savings goals, and analyzing spending patterns. 
+MyMoneyMate is a Telegram bot designed to simplify tracking personal and group expenses. It provides features to manage expenses, savings, and financial goals in an intuitive way.
+
+---
 
 ## Features
 
-- **Personal and Group Expense Tracking:** Log expenses individually or within groups.
-- **Category Management:** Organize expenses by categories for easier tracking.
-- **Expense Analysis and Statistics:** Review your spending patterns and generate reports.
-- **Multi-Currency Support:** Track expenses in different currencies.
+- **Personal Expense Tracking**: Keep track of your individual expenses in various categories.
+- **Group Expense Sharing**: Manage shared expenses within groups, calculate balances, and split costs.
+- **Category Management**: Add and organize expense categories.
+- **Expense Reports**: Export expense data to Excel for analysis.
+- **Statistics**: Get a breakdown of your spending habits by time periods.
+- **Savings Goals**: Track your progress toward savings goals.
+- **Intuitive Commands**: Use Telegram commands to interact with the bot.
+
+---
+
+## Usage
+
+### Bot Commands
+
+1. **Adding an Expense**:
+   - Command: `/new <category> <amount>`
+   - Example: `/new Food 50`
+
+2. **Deleting an Expense**:
+   - Command: `/delete <expense_id>`
+   - Example: `/delete 123`
+
+3. **Listing Expenses**:
+   - Command: `/list`
+   - Shows all expenses recorded for the current group or user.
+
+4. **Adding a Category**:
+   - Command: `/add_category <category_name>`
+   - Example: `/add_category Travel`
+
+5. **Viewing Statistics**:
+   - Command: `/stats`
+   - Provides a breakdown of expenses for various time periods.
+
+6. **Exporting to Excel**:
+   - Command: `/export`
+   - Generates an Excel file of your expenses.
+
+7. **Breaking Even**:
+   - Command: `/brake_even`
+   - Calculates how much each participant owes or is owed in a group.
+
+---
+
+## Prerequisites
+
+1. **Python**: Ensure Python 3.12 or later is installed.
+2. **Dependencies**: Install required libraries using the following command:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. **Database**: Set up a database server with the necessary credentials.
+
+---
 
 ## Running the Application
 
-You have two options to run **MyMoneyMate**:
+To run MyMoneyMate, you must provide database credentials as arguments. This ensures secure and flexible configuration. There are two ways to execute the app:
 
-### Option 1: Using the `main.exe` Executable
+### 1. Using the Script
 
-1. **Locate `main.exe`:**
-   - Navigate to the `Backend/dist` directory in your project folder.
+Run the `run_app.bat` script:
 
-   ```plaintext
-   Backend/dist
-   ```
+- **Command**:
+  ```batch
+  run_app.bat
+  ```
 
-2. **Run `main.exe`:**
-   - Double-click `main.exe` or run it from the terminal using:
+- **Editing the Script**:
+  Open the script and replace the placeholders with your database credentials. Example:
 
-     ```bash
-     ./main.exe
-     ```
+  ```batch
+  python Backend/main.py --db_host <DB_HOST> --db_name <DB_DATABASE_NAME> --db_user <DB_USER> --db_password <DB_PASSWORD> --db_port <DB_PORT>
+  ```
 
-   - This option includes all dependencies, so no additional installation is required.
+  Example with placeholders replaced:
+  ```batch
+  python Backend/main.py --db_host mymoneymate-db.c38gm24osi89.us-east-1.rds.amazonaws.com --db_name initial_db --db_user mySQL --db_password Tal123123 --db_port 5432
+  ```
 
-### Option 2: Installing Dependencies and Running the App Manually
+---
 
-If you prefer to manually set up the environment:
+### 2. Using the Command Line
 
-1. **Set Up Python and Virtual Environment:**
-   - Install Python (version 3.12 or compatible).
-   - Create and activate a virtual environment:
+Run the following command:
 
-     ```bash
-     python -m venv myenv
-     myenv\Scripts\activate  # Windows
-     source myenv/bin/activate  # macOS/Linux
-     ```
+```bash
+python Backend/main.py --db_host <DB_HOST> --db_name <DB_DATABASE_NAME> --db_user <DB_USER> --db_password <DB_PASSWORD> --db_port <DB_PORT>
+```
 
-2. **Install Required Packages:**
-   - Move to the `Backend` directory and install dependencies:
+Replace the placeholders with actual values:
 
-     ```bash
-     cd Backend
-     pip install -r requirements.txt
-     ```
+- `<DB_HOST>`: Database host (e.g., `mymoneymate-db.c38gm24osi89.us-east-1.rds.amazonaws.com`).
+- `<DB_DATABASE_NAME>`: Database name (e.g., `initial_db`).
+- `<DB_USER>`: Database username (e.g., `mySQL`).
+- `<DB_PASSWORD>`: Database password (e.g., `Tal123123`).
+- `<DB_PORT>`: Database port (e.g., `5432`).
 
-3. **Run the Application:**
-   - With all dependencies in place, launch the app:
+Example:
+```bash
+python Backend/main.py --db_host mymoneymate-db.c38gm24osi89.us-east-1.rds.amazonaws.com --db_name initial_db --db_user mySQL --db_password Tal123123 --db_port 5432
+```
 
-     ```bash
-     python main.py
-     ```
+---
 
-## Main Commands and Usage
+## Important Notes
 
-Below are the primary commands available in **MyMoneyMate**:
+1. **Database Credentials**: Ensure the credentials match your database configuration. Contact your database administrator for the correct details.
+2. **Security**: Avoid hardcoding sensitive credentials into your codebase. Use the provided script or pass them securely as command-line arguments.
 
-### 1. `/new <category> <amount>`
-   - **Description:** Adds a new expense.
-   - **Example:** `/new Food 50`
-   - **Usage:** Provides an interface to log a new expense under a specified category.
+---
 
-### 2. `/delete <expense_id>`
-   - **Description:** Deletes an expense based on the unique expense ID.
-   - **Example:** `/delete 1`
-   - **Usage:** Deletes the expense entry with the specified ID.
-
-### 3. `/add_category <category_name>`
-   - **Description:** Adds a new category to organize expenses.
-   - **Example:** `/add_category Travel`
-   - **Usage:** Useful for setting up custom categories beyond the default list.
-
-### 4. `/list`
-   - **Description:** Lists all expenses for the user or group.
-   - **Usage:** Displays expenses in a structured format, showing date, category, and amount.
-
-### 5. `/stats`
-   - **Description:** Provides a summary of expenses over different timeframes.
-   - **Example Usage:** Select between "This Month," "Last Month," or "All Time" to view relevant statistics.
-
-### 6. `/brakeeven`
-   - **Description:** Shows balances between group members based on expenses.
-   - **Usage:** Helps group members understand their owed or due amounts within shared expenses.
-
-## Additional Information
-
-- **Multi-Currency Support:** Use `/stats` to select the currency you want to view your statistics in. The app provides a selection of common currencies.
-- **Database Configuration:** Ensure any required database connections are configured in the `config.py` file or through environment variables.
-- **Environment Variables:** Define any needed environment variables in a `.env` file if required by the app.

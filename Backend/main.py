@@ -1,12 +1,10 @@
 import os
 import sys
+import argparse
+from Backend import Commands
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
-import uuid
 
-from Backend import Commands, Responses, config
-# from Backend.Commands import logger
-from Backend.Responses import responses, get_price, get_category, valid_email, help_response
 from Backend.config import (
 	TOKEN,
 	BOT_USERNAME,
@@ -21,7 +19,7 @@ from Backend.config import (
 	LOGIN_NAME_MIN_LENGTH,
 	LOGIN_NAME_MAX_LENGTH
 )
-# from Backend.backend import Database, get_categories, write_category, remove_category, validate_input
+
 from Backend.Server import Database, validate_input
 
 from telegram import (
@@ -39,7 +37,7 @@ from telegram.ext import (
 	CallbackQueryHandler
 )
 
-
+"""Handle button interactions for the bot."""
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 	query = update.callback_query
 	await query.answer()
@@ -118,18 +116,37 @@ async def error(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # Run the program
 
-from Backend import Commands
 
-if __name__ == '__main__':
-	# sys.stdout.reconfigure(encoding='utf-8')
-	db = Database()
+
+
+
+def initialize_app(host, database, user, password, port):
+		# Initialize the database connection
+		global db
+		db = Database(host, database, user, password, port)
+		Commands.db = db  # Pass the database instance to Commands
 	
-	# os.environ["PYTHONIOENCODING"] = "utf-8"
+if __name__ == '__main__':
+	parser = argparse.ArgumentParser(description="MyMoneyMate Database Configuration")
+	parser.add_argument("--db_host", required=True, help="Database host address")
+	parser.add_argument("--db_name", required=True, help="Database name")
+	parser.add_argument("--db_user", required=True, help="Database username")
+	parser.add_argument("--db_password", required=True, help="Database password")
+	parser.add_argument("--db_port", type=int, required=True, help="Database port number")
+	args = parser.parse_args()
+	# Initialize the app with database parameters
+	initialize_app(
+		host=args.db_host,
+		database=args.db_name,
+		user=args.db_user,
+		password=args.db_password,
+		port=args.db_port,
+	)
+	
+	# Initialize the application
 	app = Application.builder().token(TOKEN).build()
 	
-	# --------------------------------------------------------------------------
-	# ---------------------------COMMAND HANDLERS-------------------------------
-	# --------------------------------------------------------------------------    #
+	# Command handlers
 	app.add_handler(CommandHandler(f"{Command.START.value}", Commands.start))
 	app.add_handler(CommandHandler(f"{Command.HELP.value}", Commands.help_command))
 	app.add_handler(CommandHandler(f"{Command.STATS.value}", Commands.stats))
@@ -149,7 +166,7 @@ if __name__ == '__main__':
 	app.add_handler(CommandHandler(f"{Command.LIST.value}", Commands.list_expenses))
 	app.add_handler(MessageHandler(filters.COMMAND, Commands.unknown_command))
 	
-	# click handler
+	# Click handler
 	app.add_handler(CallbackQueryHandler(button))
 	
 	# Messages handler
@@ -158,6 +175,6 @@ if __name__ == '__main__':
 	# Log all errors
 	app.add_error_handler(error)
 	
-	print('Polling...')
+	print('MyMoneyMate Is Running...')
 	# Run the bot
 	app.run_polling(poll_interval=1)

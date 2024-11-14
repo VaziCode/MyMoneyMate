@@ -16,16 +16,16 @@ import requests
 
 """ Database class for handling all database operations. """
 class Database:
-    def __init__(self):
+    def __init__(self, host, database, user, password, port):
         self.connection = psycopg2.connect(
-            host =      config.DB_HOST,
-            database =  config.DB_DATABASE_NAME,
-            user =      config.DB_USER,
-            password =  config.DB_PASSWORD,
-            port =  int(config.DB_PORT))
-        
+            host=host,
+            database=database,
+            user=user,
+            password=password,
+            port=port,
+        )
         self.cursor = self.connection.cursor()
-    
+        
     # ------------------------------------------------------
     # ------------------- SETs / CREATEs -------------------
     # ------------------------------------------------------

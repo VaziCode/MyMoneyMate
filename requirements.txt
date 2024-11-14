@@ -1,8 +1,15 @@
 python-telegram-bot==20.1
-asyncio
-psycopg2-binary  # if using PostgreSQL
+asyncio~=3.4.3
+psycopg2-binary
 httpx[http2]~=0.23.3
-pandas
-matplotlib
-requests
+pandas~=2.2.3
+matplotlib~=3.9.2
+requests~=2.32.3
 pyinstaller
+boto3~=1.35.59
+
+pillow~=11.0.0
+telegram~=0.0.1
+python-dotenv~=1.0.1
+psycopg2~=2.9.10
+XlsxWriter~=3.2.0

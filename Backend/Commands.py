@@ -37,10 +37,10 @@ from telegram.ext import (
 )
 
 # from Backend.backend import Database, get_categories, write_category, remove_category
-from Backend.Server import Database, validate_input
+from Backend.Server import Database
 
-db = Database()  # Ensure the database connection is initialized
-
+# db = Database()  # Ensure the database connection is initialized
+db = None  # Ensure the database connection is initialized
 # # ------------------------------------------------------- #
 # # ---------------------- Commands ----------------------- #
 # # ------------------------------------------------------- #
