@@ -6,21 +6,6 @@ from typing import \
     Final  # A special typing construct to indicate to type checkers that a name cannot be re-assigned or overridden in a subclass
 
 
-# load_dotenv()
-# os.environ["PYTHONIOENCODING"] = "utf-8"
-
-#DB info
-# DB_HOST = os.environ.get("DB_HOST")
-# DB_DATABASE_NAME = os.environ.get("DB_DATABASE_NAME")
-# DB_USER = os.environ.get("DB_USER")
-# DB_PASSWORD = os.environ.get("DB_PASSWORD")
-# DB_PORT = os.environ.get("DB_PORT")
-
-
-
-# telegram info
-# TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
-
 # Commands
 class Command(Enum):
     START = "start"  # start conversation

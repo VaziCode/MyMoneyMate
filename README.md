@@ -85,7 +85,7 @@ Run the `run_app.bat` script:
 
   Example with placeholders replaced:
   ```batch
-  python Backend/main.py --db_host mymoneymate-db.c38gm24osi89.us-east-1.rds.amazonaws.com --db_name initial_db --db_user mySQL --db_password Tal123123 --db_port 5432
+  python Backend/main.py --db_host ptojectname-db.c78gm24osi89.us-east-1.rds.amazonaws.com --db_name initial_db --db_user my_SQL --db_password Tal123456 --db_port 5432
   ```
 
 ---
@@ -100,15 +100,15 @@ python Backend/main.py --db_host <DB_HOST> --db_name <DB_DATABASE_NAME> --db_use
 
 Replace the placeholders with actual values:
 
-- `<DB_HOST>`: Database host (e.g., `mymoneymate-db.c38gm24osi89.us-east-1.rds.amazonaws.com`).
-- `<DB_DATABASE_NAME>`: Database name (e.g., `initial_db`).
-- `<DB_USER>`: Database username (e.g., `mySQL`).
-- `<DB_PASSWORD>`: Database password (e.g., `Tal123123`).
-- `<DB_PORT>`: Database port (e.g., `5432`).
+- `<DB_HOST>`: Database host (e.g., `your_db_host`).
+- `<DB_DATABASE_NAME>`: Database name (e.g., `your_db_name`).
+- `<DB_USER>`: Database username (e.g., `your_-db_user`).
+- `<DB_PASSWORD>`: Database password (e.g., `your_password`).
+- `<DB_PORT>`: Database port (e.g., `your_port`).
 
 Example:
 ```bash
-python Backend/main.py --db_host mymoneymate-db.c38gm24osi89.us-east-1.rds.amazonaws.com --db_name initial_db --db_user mySQL --db_password Tal123123 --db_port 5432
+python Backend/main.py --db_host ptojectname-db.c78gm24osi89.us-east-1.rds.amazonaws.com --db_name initial_db --db_user my_SQL --db_password Tal123456 --db_port 5432
 ```
 
 ---
