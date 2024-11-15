@@ -2,9 +2,9 @@ import os
 import sys
 import argparse
 from pathlib import Path
+
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 import uuid
-
 
 # from Backend.Commands import logger
 from Backend.Responses import responses, get_price, get_category, valid_email, help_response
@@ -110,7 +110,8 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 			await query.edit_message_text(text=f"Added expense: {data}  {amount}")
 			context.user_data.pop('amount', None)  # Clear stored amount after adding
 		except Exception as e:
-			await query.edit_message_text(text=f"Error adding expense: {e}")
+			await query.edit_message_text(
+				text=f"Error adding expense: {e} Please ensure you have started the bot's conversation with /start.")
 
 
 async def error(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -122,14 +123,15 @@ async def error(update: Update, context: ContextTypes.DEFAULT_TYPE):
 from Backend import Commands
 
 
-
 def initialize_app(host, database, user, password, port):
-		# Initialize the database connection
-		global db
-		db = Database(host, database, user, password, port)
-		Commands.db = db  # Pass the database instance to Commands
-	
+	# Initialize the database connection
+	global db
+	db = Database(host, database, user, password, port)
+	Commands.db = db  # Pass the database instance to Commands
+
+
 if __name__ == '__main__':
+	# Parse the command line arguments
 	parser = argparse.ArgumentParser(description="MyMoneyMate Database Configuration")
 	parser.add_argument("--db_host", required=True, help="Database host address")
 	parser.add_argument("--db_name", required=True, help="Database name")

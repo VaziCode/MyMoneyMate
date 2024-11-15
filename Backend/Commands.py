@@ -202,6 +202,17 @@ async def error(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def new_expense_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 	"""Handle the /new command to add a new expense."""
 	try:
+		user_id = update.effective_user.id
+		group_id = update.effective_chat.id
+		user_name = update.effective_user.full_name
+		group_name = update.effective_chat.title
+		
+		# Check group and user initialization
+		error_message = ensure_user_and_group_initialized(db, user_id, group_id, user_name, group_name)
+		if error_message:
+			await update.message.reply_text(error_message)
+			return
+		
 		if update.message is None:
 			await update.callback_query.answer()
 			return
@@ -275,6 +286,7 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         /getpassword - Sends user's password in a private chat
         /setpassword - Give the user the option to change his password
         /getlogin - Getting login info
+        /setlogin - setting login info
         /signin <login_name> - Sign-in with a login namestart - Start conversation
 
 For any other unrecognized commands, please try /help or reach out for support.
@@ -294,10 +306,10 @@ async def sign_in(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 	group_id = update.message.chat.id  # get group_id = chat_id
 	last_message_flag = False  # to cut messages early
 	
-	# check if user exists and get his user's info from DB
+	# check if user exist and get his user's info from DB
 	is_user_exists, user_info = db.is_user_exists(user_id=sender_user_id)
 	
-	# if user is exists
+	# if user exist
 	if is_user_exists:
 		signed_loginname = user_info[0][2]  # get loginname from user_info
 		if signed_loginname != sender_loginname:  # and if he sent different loginname -> ask for changes
@@ -306,14 +318,13 @@ async def sign_in(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 			await update.message.reply_text(
 				f"To change the login name please use the next command: '/{Command.SET_LOGIN.value} YOUR_NEW_LOGIN_NAME'")
 			last_message_flag = True
-
 		
 		if db.get_password(sender_user_id) == None:  # if password not exists
 			db.set_password(user_id=sender_user_id, password=f"{uuid.uuid4()}")
 			await update.message.reply_text(
 				f"hey {update.message.from_user.first_name}, I have generated you a new password.\nPlease use '/{Command.GET_PASSWORD.value}' command in a private chat with me.")
 	
-	# if user is NOT exists
+	# if user is NOT exist
 	else:
 		temp_password = f"{uuid.uuid4()}"  # generate new password
 		succeed = db.create_user(user_id=sender_user_id, user_name=sender_user_name, login_name=sender_loginname,
@@ -459,6 +470,16 @@ async def get_password(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 
 
 async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+	user_id = update.effective_user.id
+	group_id = update.effective_chat.id
+	user_name = update.effective_user.full_name
+	group_name = update.effective_chat.title
+	
+	# Check group and user initialization
+	error_message = ensure_user_and_group_initialized(db, user_id, group_id, user_name, group_name)
+	if error_message:
+		await update.message.reply_text(error_message)
+		return
 	keyboard = [
 		[
 			InlineKeyboardButton("This Month", callback_data="This Month"),
@@ -548,6 +569,21 @@ async def delete_category(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 
 
 async def export(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+	"""
+	Handles the /export command to export group expenses.
+	Ensures the group is initialized before proceeding.
+	"""
+	user_id = update.effective_user.id
+	group_id = update.effective_chat.id
+	user_name = update.effective_user.full_name
+	group_name = update.effective_chat.title
+	
+	# Check group and user initialization
+	error_message = ensure_user_and_group_initialized(db, user_id, group_id, user_name, group_name)
+	if error_message:
+		await update.message.reply_text(error_message)
+		return
+	
 	if update.message.chat.type == 'private':
 		print(update.message.chat.id)
 	else:
@@ -578,6 +614,17 @@ async def brake_even(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 async def add_category(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 	"""Handle the /add_category command to add a new expense category."""
 	try:
+		user_id = update.effective_user.id
+		group_id = update.effective_chat.id
+		user_name = update.effective_user.full_name
+		group_name = update.effective_chat.title
+		
+		# Check group and user initialization
+		error_message = ensure_user_and_group_initialized(db, user_id, group_id, user_name, group_name)
+		if error_message:
+			await update.message.reply_text(error_message)
+			return
+		
 		args = update.message.text.split()
 		if len(args) < 2:
 			await update.message.reply_text("Usage: /add_category <category_name>")
@@ -595,39 +642,26 @@ async def add_category(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 		await update.message.reply_text(f"Added new category: {category_name}")
 	
 	except Exception as e:
-		logging.error(f"Error in add_category: {e}")
-		await update.message.reply_text(f"Error: {e}")
+		logging.error(
+			f"Error in add_category: {e}. Please ensure you have started the bot's conversation with /start command.")
+		await update.message.reply_text(
+			f"Error: {e}. Please ensure you have started the bot's conversation with /start command.")
 
 
 """List all expenses of the chat."""
 
 
-# async def list_expenses(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-# 	user_id = update.message.from_user.id
-# 	group_id = update.message.chat.id
-#
-# 	try:
-# 		expenses = db.get_expenses(user_id, group_id)
-#
-# 		# Check if any expenses were found
-# 		if not expenses:
-# 			await update.message.reply_text("No expenses found.")
-# 			return
-#
-# 		# Format the expenses for display, including pk_id
-# 		expenses_text = "\n".join([
-# 			f"ID: {expense[0]}, Date: {expense[1]}, Amount: {expense[2]}, Category: {expense[3]}"
-# 			for expense in expenses
-# 		])
-#
-# 		await update.message.reply_text(f"Here are your expenses:\n{expenses_text}")
-#
-# 	except Exception as e:
-# 		logging.error(f"Error in list_expenses: {e}")
-# 		await update.message.reply_text(f"Error in list_expenses: {e}")
 async def list_expenses(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-	user_id = update.message.from_user.id
-	group_id = update.message.chat.id
+	user_id = update.effective_user.id
+	group_id = update.effective_chat.id
+	user_name = update.effective_user.full_name
+	group_name = update.effective_chat.title
+	
+	# Check group and user initialization
+	error_message = ensure_user_and_group_initialized(db, user_id, group_id, user_name, group_name)
+	if error_message:
+		await update.message.reply_text(error_message)
+		return
 	
 	try:
 		# Fetch expenses from the database
@@ -660,6 +694,30 @@ async def dashboard(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 	link = "www.google.com"
 	await update.message.reply_text(text=f"<a href='{link}'>dashboard</a>", parse_mode="html")
 
+
+def ensure_user_and_group_initialized(db, user_id, group_id, user_name, group_name):
+	"""
+	Ensures the user and group exist in the database.
+	If the group doesn't exist, return an error string.
+	"""
+	try:
+		# Check if the group exists
+		db.cursor.execute("SELECT pk_id FROM groups WHERE pk_id = %s", (group_id,))
+		group = db.cursor.fetchone()
+		
+		if not group:
+			return f"Group '{group_name}' does not exist in the database. Please initialize the group using /start."
+		
+		# Ensure the user exists
+		db.cursor.execute("SELECT pk_id FROM users WHERE pk_id = %s", (user_id,))
+		user = db.cursor.fetchone()
+		if not user:
+			db.new_user(user_id, user_name)
+		
+		return None  # No errors
+	except Exception as e:
+		logging.error(f"Error initializing user or group: {e}")
+		return f"An error occurred while initializing user or group: {e}"
 # ------------------------------------------------------- #
 # ---------------------- End Commands ------------------- #
 # ------------------------------------------------------- #
