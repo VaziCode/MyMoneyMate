@@ -695,29 +695,55 @@ async def dashboard(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 	await update.message.reply_text(text=f"<a href='{link}'>dashboard</a>", parse_mode="html")
 
 
+# def ensure_user_and_group_initialized(db, user_id, group_id, user_name, group_name):
+# 	"""
+# 	Ensures the user and group exist in the database.
+# 	If the group doesn't exist, return an error string.
+# 	"""
+# 	try:
+# 		# Check if the group exists
+# 		db.cursor.execute("SELECT pk_id FROM groups WHERE pk_id = %s", (group_id,))
+# 		group = db.cursor.fetchone()
+#
+# 		if not group:
+# 			return f"Group '{group_name}' does not exist in the database. Please initialize the group using /start."
+#
+# 		# Ensure the user exists
+# 		db.cursor.execute("SELECT pk_id FROM users WHERE pk_id = %s", (user_id,))
+# 		user = db.cursor.fetchone()
+# 		if not user:
+# 			db.new_user(user_id, user_name)
+#
+# 		return None  # No errors
+# 	except Exception as e:
+# 		logging.error(f"Error initializing user or group: {e}")
+# 		return f"An error occurred while initializing user or group: {e}"
+
 def ensure_user_and_group_initialized(db, user_id, group_id, user_name, group_name):
-	"""
-	Ensures the user and group exist in the database.
-	If the group doesn't exist, return an error string.
-	"""
-	try:
-		# Check if the group exists
-		db.cursor.execute("SELECT pk_id FROM groups WHERE pk_id = %s", (group_id,))
-		group = db.cursor.fetchone()
-		
-		if not group:
-			return f"Group '{group_name}' does not exist in the database. Please initialize the group using /start."
-		
-		# Ensure the user exists
-		db.cursor.execute("SELECT pk_id FROM users WHERE pk_id = %s", (user_id,))
-		user = db.cursor.fetchone()
-		if not user:
-			db.new_user(user_id, user_name)
-		
-		return None  # No errors
-	except Exception as e:
-		logging.error(f"Error initializing user or group: {e}")
-		return f"An error occurred while initializing user or group: {e}"
+    """
+    Ensures the user and group exist in the database.
+    Returns an error message if the group does not exist.
+    """
+    try:
+        # Check if the group exists
+        db.cursor.execute("SELECT pk_id FROM groups WHERE pk_id = %s", (group_id,))
+        group = db.cursor.fetchone()
+
+        if not group:
+            return f"Group '{group_name}' does not exist in the database. Please use /start to initialize the group."
+
+        # Ensure the user exists
+        db.cursor.execute("SELECT pk_id FROM users WHERE pk_id = %s", (user_id,))
+        user = db.cursor.fetchone()
+        if not user:
+            db.new_user(user_id, user_name)
+
+        return None  # No errors
+    except Exception as e:
+        logging.error(f"Error initializing user or group: {e}")
+        db.connection.rollback()  # Roll back the transaction on error
+        return f"An error occurred while initializing user or group: {e}"
+
 # ------------------------------------------------------- #
 # ---------------------- End Commands ------------------- #
 # ------------------------------------------------------- #
